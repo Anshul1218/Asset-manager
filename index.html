@@ -1,0 +1,468 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ELITE Earning Manager</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .elite-container {
+            background: white;
+            padding: 0;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            width: 100%;
+            max-width: 900px;
+            overflow: hidden; 
+        }
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #1a1a1a; 
+            color: #f0f2f5;
+            padding: 20px 30px;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+            margin: 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            border-bottom: 3px solid #b59410; 
+        }
+        .app-header h1 {
+            margin: 0;
+            color: #f0f2f5;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 800;
+            font-size: 24px;
+        }
+        .logo-frame {
+            width: 70px;
+            height: 70px;
+            border: 2px solid #b59410; 
+            border-radius: 8px; 
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.4); 
+            background-color: #1a1a1a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .header-logo {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; 
+        }
+        .content-area {
+            padding: 30px;
+        }
+        form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 30px;
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .input-group {
+            flex: 1 1 calc(33.333% - 15px); 
+            display: flex;
+            flex-direction: column;
+        }
+        .photo-group {
+            flex: 1 1 100%; 
+        }
+        label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #b59410; 
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        input {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        input:focus {
+            outline: none;
+            border-color: #28a745;
+            box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1);
+        }
+        button.submit-btn {
+            padding: 12px 20px;
+            background-color: #28a745; 
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 10px;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        button.submit-btn:hover {
+            background-color: #218838;
+            box-shadow: 0 0 10px rgba(40, 167, 69, 0.4); 
+        }
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+            vertical-align: middle;
+        }
+        th {
+            background-color: #f8f9fa;
+            font-weight: 700;
+            color: #333;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 1px;
+        }
+        .tournament-img {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid #eee;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .tournament-img:hover {
+            transform: scale(1.1);
+        }
+        .balance-container {
+            margin-top: 20px;
+            font-size: 24px;
+            font-weight: 800;
+            text-align: right;
+            padding: 20px;
+            background-color: #1a1a1a; 
+            color: white;
+            border-radius: 8px;
+            border: 2px solid #b59410; 
+        }
+        .positive { color: #2ecc71; } 
+        .negative { color: #e74c3c; } 
+        .live-preview-text {
+            font-size: 14px;
+            color: #aaa;
+            font-weight: normal;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .delete-btn {
+            background-color: transparent;
+            color: #dc3545;
+            border: 1px solid #dc3545;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .delete-btn:hover {
+            background-color: #dc3545;
+            color: white;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            max-width: 90%;
+            max-height: 85vh;
+            border-radius: 8px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.5);
+        }
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .time-text {
+            font-size: 12px;
+            color: #777;
+            display: block;
+            margin-top: 2px;
+        }
+        @media (max-width: 768px) {
+            .app-header {
+                flex-direction: column-reverse;
+                align-items: center;
+                gap: 10px;
+                padding: 15px 20px;
+            }
+            .app-header h1 {
+                font-size: 18px;
+                text-align: center;
+            }
+            .input-group {
+                flex: 1 1 calc(50% - 15px);
+            }
+        }
+    </style>
+</head>
+<body>
+
+
+<div class="elite-container">
+    <div class="app-header">
+        <h1>ELITE Earning Manager</h1>
+        <div class="logo-frame">
+            <img src="https://cdn.discordapp.com/attachments/1278245292172513280/1483794108706328717/mcl_elite_logo.png?ex=69bbe273&is=69ba90f3&hm=56ff175e451d3b585658197d28114d705b88fe2522ee23ba4e8b668580040d7f&" alt="MCL ELITE" class="header-logo">
+        </div>
+    </div>
+    
+    <div class="content-area">
+        <form id="tournamentForm">
+            <div class="input-group photo-group">
+                <label for="photo">Tournament Screenshot (Proof)</label>
+                <input type="file" id="photo" accept="image/*">
+            </div>
+            <div class="input-group">
+                <label for="tournamentName">Tournament Name</label>
+                <input type="text" id="tournamentName" placeholder="e.g., Weekly Apex Cup" required>
+            </div>
+            <div class="input-group">
+                <label for="date">Date Played</label>
+                <input type="date" id="date" required>
+            </div>
+            <div class="input-group">
+                <label for="time">Time</label>
+                <input type="time" id="time" required>
+            </div>
+            <div class="input-group">
+                <label for="entryFee">Entry Fee (₹)</label>
+                <input type="number" id="entryFee" step="1" min="0" placeholder="0" required>
+            </div>
+            <div class="input-group">
+                <label for="prizeWon">Prize Won (₹)</label>
+                <input type="number" id="prizeWon" step="1" min="0" placeholder="0" required>
+            </div>
+            <button type="submit" class="submit-btn">Add to Records</button>
+        </form>
+
+
+        <div class="balance-container">
+            <span class="live-preview-text">Live Team Earnings:</span>
+            <span id="totalBalance" class="positive">₹0</span>
+        </div>
+
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Proof</th>
+                    <th>Tournament Name</th>
+                    <th>Date & Time</th>
+                    <th>Fee</th>
+                    <th>Prize</th>
+                    <th>Net</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="recordList">
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<div id="imageModal" class="modal" onclick="window.closeModal()">
+    <span class="close-btn">&times;</span>
+    <img class="modal-content" id="fullSizeImage">
+</div>
+
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAHoY4kVpeVuh6HWZ6ZSfgIe8QsjlYSt10",
+      authDomain: "elite-earning-manager.firebaseapp.com",
+      projectId: "elite-earning-manager",
+      storageBucket: "elite-earning-manager.firebasestorage.app",
+      messagingSenderId: "235331806399",
+      appId: "1:235331806399:web:a6fcea8f2c16800ef4920a",
+      databaseURL: "https://elite-earning-manager-default-rtdb.firebaseio.com"
+    };
+
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const recordsRef = ref(db, 'tournaments');
+
+
+    const form = document.getElementById('tournamentForm');
+    const recordList = document.getElementById('recordList');
+    const balanceDisplay = document.getElementById('totalBalance');
+    const entryFeeInput = document.getElementById('entryFee');
+    const prizeWonInput = document.getElementById('prizeWon');
+    const modal = document.getElementById('imageModal');
+    const fullSizeImage = document.getElementById('fullSizeImage');
+
+
+    let savedBalance = 0;
+    let localRecordsArray = []; 
+
+
+    onValue(recordsRef, (snapshot) => {
+        const data = snapshot.val();
+        localRecordsArray = [];
+        savedBalance = 0;
+        recordList.innerHTML = ''; 
+
+
+        if (data) {
+            for (let id in data) {
+                localRecordsArray.push({ id: id, ...data[id] });
+            }
+
+
+            localRecordsArray.sort((a, b) => new Date(b.date + ' ' + b.time) - new Date(a.date + ' ' + a.time));
+
+
+            localRecordsArray.forEach((record) => {
+                const net = record.prizeWon - record.entryFee;
+                savedBalance += net; 
+
+
+                let photoHtml = '<span style="color:#ccc; font-size:11px;">No Proof</span>';
+                if (record.photoBase64) {
+                    photoHtml = `<img src="${record.photoBase64}" class="tournament-img" alt="Proof" onclick="window.openModal('${record.photoBase64}')">`;
+                }
+
+
+                const tName = record.tournamentName || "Unnamed Tournament";
+                const dateObj = new Date(record.date);
+                const formattedDate = dateObj.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+                const tTime = record.time ? `<span class="time-text">${record.time}</span>` : "";
+
+
+                const newRow = document.createElement('tr');
+                newRow.innerHTML = `
+                    <td>${photoHtml}</td>
+                    <td><strong>${tName}</strong></td>
+                    <td>${formattedDate} ${tTime}</td>
+                    <td>₹${record.entryFee.toLocaleString('en-IN')}</td>
+                    <td>₹${record.prizeWon.toLocaleString('en-IN')}</td>
+                    <td class="${net >= 0 ? 'positive' : 'negative'}"><strong>₹${net.toLocaleString('en-IN')}</strong></td>
+                    <td><button class="delete-btn" onclick="window.deleteRecord('${record.id}')">Delete</button></td>
+                `;
+                recordList.appendChild(newRow);
+            });
+        }
+        updateLiveBalance();
+    });
+
+
+    form.addEventListener('submit', function(event) {
+        event.preventDefault();
+
+
+        const tName = document.getElementById('tournamentName').value;
+        const date = document.getElementById('date').value;
+        const time = document.getElementById('time').value;
+        const entryFee = parseInt(entryFeeInput.value) || 0;
+        const prizeWon = parseInt(prizeWonInput.value) || 0;
+        const photoInput = document.getElementById('photo');
+
+
+        const saveRecord = (base64Image) => {
+            const newRecord = {
+                tournamentName: tName,
+                date: date,
+                time: time,
+                entryFee: entryFee,
+                prizeWon: prizeWon,
+                photoBase64: base64Image
+            };
+            push(recordsRef, newRecord); 
+            form.reset(); 
+        };
+
+
+        if (photoInput.files && photoInput.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                saveRecord(e.target.result); 
+            };
+            reader.readAsDataURL(photoInput.files[0]);
+        } else {
+            saveRecord(null);
+        }
+    });
+
+
+    function updateLiveBalance() {
+        const currentEntryFee = parseInt(entryFeeInput.value) || 0;
+        const currentPrizeWon = parseInt(prizeWonInput.value) || 0;
+        const liveBalance = savedBalance - currentEntryFee + currentPrizeWon;
+
+
+        balanceDisplay.textContent = `₹${liveBalance.toLocaleString('en-IN')}`;
+        balanceDisplay.className = liveBalance >= 0 ? 'positive' : 'negative';
+    }
+
+
+    entryFeeInput.addEventListener('input', updateLiveBalance);
+    prizeWonInput.addEventListener('input', updateLiveBalance);
+
+
+    window.deleteRecord = function(recordId) {
+        if (confirm("Are you sure you want to remove this record? Everyone will see it removed.")) {
+            remove(ref(db, 'tournaments/' + recordId)); 
+        }
+    };
+
+
+    window.openModal = function(imageSrc) {
+        modal.style.display = "flex"; 
+        fullSizeImage.src = imageSrc; 
+        fullSizeImage.onclick = function(event) { event.stopPropagation(); }
+    };
+
+
+    window.closeModal = function() {
+        modal.style.display = "none";
+    };
+</script>
+
+
+</body>
+</html>
