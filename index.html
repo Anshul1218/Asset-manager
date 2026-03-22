@@ -16,6 +16,7 @@
             align-items: center;
         }
         
+        /* --- Admin Login Modal Styles --- */
         .auth-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -84,6 +85,7 @@
             font-size: 14px;
         }
         .cancel-btn:hover { color: #dc3545; }
+        /* -------------------------------------- */
 
         .elite-container {
             background: white;
@@ -335,8 +337,8 @@
         <img src="https://i.ibb.co/m5BMQwRc/file-00000000e07c71fa8df812eac4409503.png" alt="MCL ELITE Logo" style="width: 60px; margin-bottom: 15px; border-radius: 6px; border: 1px solid #b59410;">
         <input type="text" id="usernameInput" placeholder="Username">
         <input type="password" id="passwordInput" placeholder="Password" inputmode="numeric" pattern="[0-9]*">
-        <button class="auth-btn" id="doLoginBtn">Login</button>
-        <button class="cancel-btn" id="doCancelBtn">Cancel</button>
+        <button class="auth-btn" onclick="window.verifyAdmin()">Login</button>
+        <button class="cancel-btn" onclick="window.closeAuth()">Cancel</button>
     </div>
 </div>
 
@@ -344,7 +346,7 @@
     <div class="app-header">
         <div class="header-title-area">
             <h1>ELITE Earning Manager</h1>
-            <button id="adminToggleBtn" class="lock-btn">Admin Login</button>
+            <button id="adminToggleBtn" class="lock-btn" onclick="window.toggleAdmin()">Admin Login</button>
         </div>
         <div class="logo-frame">
             <img src="https://i.ibb.co/m5BMQwRc/file-00000000e07c71fa8df812eac4409503.png" alt="MCL ELITE Logo" class="header-logo">
@@ -403,7 +405,7 @@
     </div>
 </div>
 
-<div id="imageModal" class="modal">
+<div id="imageModal" class="modal" onclick="window.closeModal()">
     <span class="close-btn">&times;</span>
     <img class="modal-content" id="fullSizeImage">
 </div>
@@ -412,46 +414,43 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
+    // ==========================================
+    // 🛑 ADMIN CREDENTIALS 🛑
+    // ==========================================
     const ADMIN_USERNAME = "Professor";
     const ADMIN_PASSWORD = "121205";
+    // ==========================================
 
-    // Bulletproof: Prevents crashing if Incognito blocks Local Storage
     let isAdminLoggedIn = false;
+    
+    // CRASH-PROOF SHIELD: Safe check for memory
     try {
-        isAdminLoggedIn = localStorage.getItem('eliteAdminState') === 'true';
-    } catch(e) {
-        console.warn("Storage restricted by browser.");
+        if (window.localStorage && localStorage.getItem('eliteAdminState') === 'true') {
+            isAdminLoggedIn = true;
+        }
+    } catch (e) {
+        console.warn("Browser blocked storage. That's fine, app will still run!");
     }
 
     const adminToggleBtn = document.getElementById('adminToggleBtn');
     const authModal = document.getElementById('authModal');
-    const doLoginBtn = document.getElementById('doLoginBtn');
-    const doCancelBtn = document.getElementById('doCancelBtn');
-    const imageModal = document.getElementById('imageModal');
-    const modalCloseBtn = document.querySelector('.close-btn');
-    const fullSizeImage = document.getElementById('fullSizeImage');
-    const recordList = document.getElementById('recordList');
-    const form = document.getElementById('tournamentForm');
-    const balanceDisplay = document.getElementById('totalBalance');
-    const entryFeeInput = document.getElementById('entryFee');
-    const prizeWonInput = document.getElementById('prizeWon');
 
     if (isAdminLoggedIn) {
         adminToggleBtn.textContent = "Logout Admin";
     }
 
-    function openAuth() {
+    // Force functions to connect to the window safely
+    window.openAuth = function() {
         authModal.style.display = 'flex';
-    }
+    };
 
-    function closeAuth() {
+    window.closeAuth = function() {
         authModal.style.display = 'none';
         document.getElementById('usernameInput').value = '';
         document.getElementById('passwordInput').value = '';
-    }
+    };
 
-    // Connect Login buttons properly
-    doLoginBtn.addEventListener('click', () => {
+    window.verifyAdmin = function() {
         const u = document.getElementById('usernameInput').value;
         const p = document.getElementById('passwordInput').value;
         
@@ -459,34 +458,23 @@
             isAdminLoggedIn = true;
             try { localStorage.setItem('eliteAdminState', 'true'); } catch(e){}
             adminToggleBtn.textContent = "Logout Admin";
-            closeAuth();
+            window.closeAuth();
             alert("Admin Access Granted! You can now save or delete records.");
         } else {
             alert("Incorrect Username or Password!");
         }
-    });
+    };
 
-    doCancelBtn.addEventListener('click', closeAuth);
-
-    adminToggleBtn.addEventListener('click', () => {
+    window.toggleAdmin = function() {
         if (isAdminLoggedIn) {
             isAdminLoggedIn = false;
             try { localStorage.removeItem('eliteAdminState'); } catch(e){}
             adminToggleBtn.textContent = "Admin Login";
             alert("You have safely logged out.");
         } else {
-            openAuth();
+            window.openAuth();
         }
-    });
-
-    imageModal.addEventListener('click', () => {
-        imageModal.style.display = "none";
-    });
-
-    modalCloseBtn.addEventListener('click', (e) => {
-        imageModal.style.display = "none";
-        e.stopPropagation();
-    });
+    };
 
     const firebaseConfig = {
       apiKey: "AIzaSyAHoY4kVpeVuh6HWZ6ZSfgIe8QsjlYSt10",
@@ -501,6 +489,14 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
     const recordsRef = ref(db, 'tournaments');
+
+    const form = document.getElementById('tournamentForm');
+    const recordList = document.getElementById('recordList');
+    const balanceDisplay = document.getElementById('totalBalance');
+    const entryFeeInput = document.getElementById('entryFee');
+    const prizeWonInput = document.getElementById('prizeWon');
+    const modal = document.getElementById('imageModal');
+    const fullSizeImage = document.getElementById('fullSizeImage');
 
     let savedBalance = 0;
 
@@ -523,7 +519,7 @@
 
                 let photoHtml = '<span style="color:#ccc; font-size:11px;">No Proof</span>';
                 if (record.photoBase64) {
-                    photoHtml = `<img src="${record.photoBase64}" class="tournament-img" alt="Proof" data-src="${record.photoBase64}">`;
+                    photoHtml = `<img src="${record.photoBase64}" class="tournament-img" alt="Proof" onclick="window.openModal('${record.photoBase64}')">`;
                 }
 
                 const tName = record.tournamentName || "Unnamed Tournament";
@@ -539,7 +535,7 @@
                     <td>₹${record.entryFee.toLocaleString('en-IN')}</td>
                     <td>₹${record.prizeWon.toLocaleString('en-IN')}</td>
                     <td class="${net >= 0 ? 'positive' : 'negative'}"><strong>₹${net.toLocaleString('en-IN')}</strong></td>
-                    <td><button class="delete-btn" data-id="${record.id}">Delete</button></td>
+                    <td><button class="delete-btn" onclick="window.deleteRecord('${record.id}')">Delete</button></td>
                 `;
                 recordList.appendChild(newRow);
             });
@@ -547,28 +543,11 @@
         updateLiveBalance();
     });
 
-    // Handle clicks inside the table dynamically
-    recordList.addEventListener('click', (e) => {
-        if (e.target.classList.contains('delete-btn')) {
-            if (!isAdminLoggedIn) {
-                openAuth();
-                return; 
-            }
-            if (confirm("Are you sure you want to remove this record? Everyone will see it removed.")) {
-                const recordId = e.target.getAttribute('data-id');
-                remove(ref(db, 'tournaments/' + recordId)); 
-            }
-        } else if (e.target.classList.contains('tournament-img')) {
-            imageModal.style.display = "flex";
-            fullSizeImage.src = e.target.getAttribute('data-src');
-        }
-    });
-
     form.addEventListener('submit', function(event) {
         event.preventDefault();
 
         if (!isAdminLoggedIn) {
-            openAuth();
+            window.openAuth();
             return; 
         }
 
@@ -597,4 +576,21 @@
                 submitBtn.textContent = "Add to Records";
                 submitBtn.disabled = false;
             }).catch(error => {
-                alert
+                alert("Error saving: " + error.message);
+                submitBtn.textContent = "Add to Records";
+                submitBtn.disabled = false;
+            });
+        };
+
+        if (photoInput.files && photoInput.files[0]) {
+            const file = photoInput.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 800; 
+                    const MAX_HEIGHT = 800;
+                    let width = img.width;
+                    let height = i
