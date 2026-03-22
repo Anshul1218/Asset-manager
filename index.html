@@ -220,5 +220,267 @@
         }
         @media (max-width: 768px) {
             .app-header {
-                flex-direction:
-                </html>
+                flex-direction: column-reverse;
+                align-items: center;
+                gap: 10px;
+                padding: 15px 20px;
+            }
+            .app-header h1 {
+                font-size: 18px;
+                text-align: center;
+            }
+            .input-group {
+                flex: 1 1 calc(50% - 15px);
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="elite-container">
+    <div class="app-header">
+        <h1>ELITE Earning Manager</h1>
+        <div class="logo-frame">
+            <img src="mcl_elite.png" alt="MCL ELITE" class="header-logo">
+        </div>
+    </div>
+    
+    <div class="content-area">
+        <form id="tournamentForm">
+            <div class="input-group photo-group">
+                <label for="photo">Tournament Screenshot (Proof)</label>
+                <input type="file" id="photo" accept="image/*">
+            </div>
+            <div class="input-group">
+                <label for="tournamentName">Tournament Name</label>
+                <input type="text" id="tournamentName" placeholder="e.g., Weekly Apex Cup" required>
+            </div>
+            <div class="input-group">
+                <label for="date">Date Played</label>
+                <input type="date" id="date" required>
+            </div>
+            <div class="input-group">
+                <label for="time">Time</label>
+                <input type="time" id="time" required>
+            </div>
+            <div class="input-group">
+                <label for="entryFee">Entry Fee (₹)</label>
+                <input type="number" id="entryFee" step="1" min="0" placeholder="0" required>
+            </div>
+            <div class="input-group">
+                <label for="prizeWon">Prize Won (₹)</label>
+                <input type="number" id="prizeWon" step="1" min="0" placeholder="0" required>
+            </div>
+            <button type="submit" class="submit-btn">Add to Records</button>
+        </form>
+
+        <div class="balance-container">
+            <span class="live-preview-text">Live Team Earnings:</span>
+            <span id="totalBalance" class="positive">₹0</span>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Proof</th>
+                    <th>Tournament Name</th>
+                    <th>Date & Time</th>
+                    <th>Fee</th>
+                    <th>Prize</th>
+                    <th>Net</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="recordList">
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div id="imageModal" class="modal" onclick="window.closeModal()">
+    <span class="close-btn">&times;</span>
+    <img class="modal-content" id="fullSizeImage">
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAHoY4kVpeVuh6HWZ6ZSfgIe8QsjlYSt10",
+      authDomain: "elite-earning-manager.firebaseapp.com",
+      projectId: "elite-earning-manager",
+      storageBucket: "elite-earning-manager.firebasestorage.app",
+      messagingSenderId: "235331806399",
+      appId: "1:235331806399:web:a6fcea8f2c16800ef4920a",
+      databaseURL: "https://elite-earning-manager-default-rtdb.firebaseio.com"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const recordsRef = ref(db, 'tournaments');
+
+    const form = document.getElementById('tournamentForm');
+    const recordList = document.getElementById('recordList');
+    const balanceDisplay = document.getElementById('totalBalance');
+    const entryFeeInput = document.getElementById('entryFee');
+    const prizeWonInput = document.getElementById('prizeWon');
+    const modal = document.getElementById('imageModal');
+    const fullSizeImage = document.getElementById('fullSizeImage');
+
+    let savedBalance = 0;
+    let localRecordsArray = []; 
+
+    onValue(recordsRef, (snapshot) => {
+        const data = snapshot.val();
+        localRecordsArray = [];
+        savedBalance = 0;
+        recordList.innerHTML = ''; 
+
+        if (data) {
+            for (let id in data) {
+                localRecordsArray.push({ id: id, ...data[id] });
+            }
+
+            localRecordsArray.sort((a, b) => new Date(b.date + ' ' + b.time) - new Date(a.date + ' ' + a.time));
+
+            localRecordsArray.forEach((record) => {
+                const net = record.prizeWon - record.entryFee;
+                savedBalance += net; 
+
+                let photoHtml = '<span style="color:#ccc; font-size:11px;">No Proof</span>';
+                if (record.photoBase64) {
+                    photoHtml = `<img src="${record.photoBase64}" class="tournament-img" alt="Proof" onclick="window.openModal('${record.photoBase64}')">`;
+                }
+
+                const tName = record.tournamentName || "Unnamed Tournament";
+                const dateObj = new Date(record.date);
+                const formattedDate = dateObj.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+                const tTime = record.time ? `<span class="time-text">${record.time}</span>` : "";
+
+                const newRow = document.createElement('tr');
+                newRow.innerHTML = `
+                    <td>${photoHtml}</td>
+                    <td><strong>${tName}</strong></td>
+                    <td>${formattedDate} ${tTime}</td>
+                    <td>₹${record.entryFee.toLocaleString('en-IN')}</td>
+                    <td>₹${record.prizeWon.toLocaleString('en-IN')}</td>
+                    <td class="${net >= 0 ? 'positive' : 'negative'}"><strong>₹${net.toLocaleString('en-IN')}</strong></td>
+                    <td><button class="delete-btn" onclick="window.deleteRecord('${record.id}')">Delete</button></td>
+                `;
+                recordList.appendChild(newRow);
+            });
+        }
+        updateLiveBalance();
+    });
+
+    form.addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        // Change button text so user knows it's working
+        const submitBtn = form.querySelector('.submit-btn');
+        submitBtn.textContent = "Saving...";
+        submitBtn.disabled = true;
+
+        const tName = document.getElementById('tournamentName').value;
+        const date = document.getElementById('date').value;
+        const time = document.getElementById('time').value;
+        const entryFee = parseInt(entryFeeInput.value) || 0;
+        const prizeWon = parseInt(prizeWonInput.value) || 0;
+        const photoInput = document.getElementById('photo');
+
+        const saveRecord = (base64Image) => {
+            const newRecord = {
+                tournamentName: tName,
+                date: date,
+                time: time,
+                entryFee: entryFee,
+                prizeWon: prizeWon,
+                photoBase64: base64Image
+            };
+            push(recordsRef, newRecord).then(() => {
+                form.reset(); 
+                submitBtn.textContent = "Add to Records";
+                submitBtn.disabled = false;
+            }).catch(error => {
+                alert("Error saving: " + error.message);
+                submitBtn.textContent = "Add to Records";
+                submitBtn.disabled = false;
+            });
+        };
+
+        // NEW COMPRESSION ENGINE
+        if (photoInput.files && photoInput.files[0]) {
+            const file = photoInput.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    // Create a hidden canvas to resize the image
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 800; // Max size to keep it sharp but tiny
+                    const MAX_HEIGHT = 800;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height *= MAX_WIDTH / width;
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width *= MAX_HEIGHT / height;
+                            height = MAX_HEIGHT;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // Compress to highly efficient JPEG (70% quality)
+                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+                    saveRecord(compressedBase64);
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        } else {
+            saveRecord(null);
+        }
+    });
+
+    function updateLiveBalance() {
+        const currentEntryFee = parseInt(entryFeeInput.value) || 0;
+        const currentPrizeWon = parseInt(prizeWonInput.value) || 0;
+        const liveBalance = savedBalance - currentEntryFee + currentPrizeWon;
+
+        balanceDisplay.textContent = `₹${liveBalance.toLocaleString('en-IN')}`;
+        balanceDisplay.className = liveBalance >= 0 ? 'positive' : 'negative';
+    }
+
+    entryFeeInput.addEventListener('input', updateLiveBalance);
+    prizeWonInput.addEventListener('input', updateLiveBalance);
+
+    window.deleteRecord = function(recordId) {
+        if (confirm("Are you sure you want to remove this record? Everyone will see it removed.")) {
+            remove(ref(db, 'tournaments/' + recordId)); 
+        }
+    };
+
+    window.openModal = function(imageSrc) {
+        modal.style.display = "flex"; 
+        fullSizeImage.src = imageSrc; 
+        fullSizeImage.onclick = function(event) { event.stopPropagation(); }
+    };
+
+    window.closeModal = function() {
+        modal.style.display = "none";
+    };
+</script>
+
+</body>
+</html>
