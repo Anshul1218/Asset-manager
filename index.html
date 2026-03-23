@@ -7,89 +7,18 @@
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #e4c57a 0%, #fdf2d1 100%);
-            background-attachment: fixed; 
+            background-color: #f0f2f5;
             margin: 0;
             padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
-        
-        .auth-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0, 0, 0, 0.85);
-            z-index: 10000;
-            display: none; 
-            justify-content: center;
-            align-items: center;
-            backdrop-filter: blur(5px);
-        }
-        .auth-box {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            max-width: 90%;
-            width: 320px;
-            border: 2px solid #b59410;
-        }
-        .auth-box h2 {
-            margin-top: 0;
-            color: #1a1a1a;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 20px;
-        }
-        .auth-box input {
-            width: 100%;
-            padding: 12px;
-            margin: 8px 0;
-            font-size: 16px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            box-sizing: border-box;
-        }
-        .auth-box input:focus {
-            border-color: #b59410;
-            outline: none;
-            box-shadow: 0 0 0 2px rgba(181, 148, 16, 0.2);
-        }
-        .auth-btn {
-            width: 100%;
-            padding: 12px;
-            background: #b59410;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 15px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .auth-btn:hover { background: #967a0c; }
-        .cancel-btn {
-            width: 100%;
-            padding: 10px;
-            background: transparent;
-            color: #888;
-            border: none;
-            cursor: pointer;
-            margin-top: 5px;
-            font-size: 14px;
-        }
-        .cancel-btn:hover { color: #dc3545; }
-
         .elite-container {
             background: white;
             padding: 0;
             border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15); 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
             width: 100%;
             max-width: 900px;
             overflow: hidden; 
@@ -104,14 +33,9 @@
             border-top-left-radius: 12px;
             border-top-right-radius: 12px;
             margin: 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
             border-bottom: 3px solid #b59410; 
         }
-        
-        .header-title-area {
-            display: flex;
-            flex-direction: column;
-        }
-        
         .app-header h1 {
             margin: 0;
             color: #f0f2f5;
@@ -120,24 +44,6 @@
             font-weight: 800;
             font-size: 24px;
         }
-
-        .lock-btn {
-            background: transparent;
-            color: #b59410;
-            border: 1px solid #b59410;
-            padding: 4px 10px;
-            border-radius: 4px;
-            font-size: 12px;
-            cursor: pointer;
-            margin-top: 5px;
-            width: fit-content;
-        }
-
-        .lock-btn:hover {
-            background: #b59410;
-            color: #1a1a1a;
-        }
-
         .logo-frame {
             width: 70px;
             height: 70px;
@@ -183,11 +89,16 @@
             text-transform: uppercase;
             letter-spacing: 1px;
         }
-        input[type="text"], input[type="number"], input[type="date"], input[type="time"] {
+        input {
             padding: 10px;
             border: 1px solid #ddd;
             border-radius: 6px;
             font-size: 14px;
+        }
+        input:focus {
+            outline: none;
+            border-color: #28a745;
+            box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1);
         }
         button.submit-btn {
             padding: 12px 20px;
@@ -277,7 +188,7 @@
         .modal {
             display: none;
             position: fixed;
-            z-index: 10000; 
+            z-index: 1000;
             left: 0;
             top: 0;
             width: 100%;
@@ -318,9 +229,6 @@
                 font-size: 18px;
                 text-align: center;
             }
-            .header-title-area {
-                align-items: center;
-            }
             .input-group {
                 flex: 1 1 calc(50% - 15px);
             }
@@ -329,25 +237,11 @@
 </head>
 <body>
 
-<div id="authModal" class="auth-overlay">
-    <div class="auth-box">
-        <h2>Admin Login</h2>
-        <img src="https://i.ibb.co/m5BMQwRc/file-00000000e07c71fa8df812eac4409503.png" alt="MCL ELITE Logo" style="width: 60px; margin-bottom: 15px; border-radius: 6px; border: 1px solid #b59410;">
-        <input type="text" id="usernameInput" placeholder="Username">
-        <input type="password" id="passwordInput" placeholder="Password" inputmode="numeric" pattern="[0-9]*">
-        <button class="auth-btn" id="loginExecuteBtn">Login</button>
-        <button class="cancel-btn" id="loginCancelBtn">Cancel</button>
-    </div>
-</div>
-
 <div class="elite-container">
     <div class="app-header">
-        <div class="header-title-area">
-            <h1>ELITE Earning Manager</h1>
-            <button id="adminToggleBtn" class="lock-btn">Admin Login</button>
-        </div>
+        <h1>ELITE Earning Manager</h1>
         <div class="logo-frame">
-            <img src="https://i.ibb.co/m5BMQwRc/file-00000000e07c71fa8df812eac4409503.png" alt="MCL ELITE Logo" class="header-logo">
+            <img src="https://cdn.discordapp.com/attachments/1278245292172513280/1483794108706328717/mcl_elite_logo.png?ex=69c07fb3&is=69bf2e33&hm=58e5f95eb29ea225f0ce3c9fb0b6d8b2cbe33133b42f73f6b6446d0baf2d1095&" alt="MCL ELITE" class="header-logo">
         </div>
     </div>
     
@@ -377,7 +271,7 @@
                 <label for="prizeWon">Prize Won (₹)</label>
                 <input type="number" id="prizeWon" step="1" min="0" placeholder="0" required>
             </div>
-            <button type="submit" class="submit-btn" id="mainSubmitBtn">Add to Records</button>
+            <button type="submit" class="submit-btn">Add to Records</button>
         </form>
 
         <div class="balance-container">
@@ -403,126 +297,14 @@
     </div>
 </div>
 
-<div id="imageModal" class="modal">
-    <span class="close-btn" id="modalCloseBtn">&times;</span>
+<div id="imageModal" class="modal" onclick="window.closeModal()">
+    <span class="close-btn">&times;</span>
     <img class="modal-content" id="fullSizeImage">
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
-
-    // --- System Check: Let user know JS loaded ---
-    const mainSubmitBtn = document.getElementById('mainSubmitBtn');
-    mainSubmitBtn.textContent = "System Ready - Add Records";
-    mainSubmitBtn.style.backgroundColor = "#20c997"; // Flash a different green to prove it loaded
-
-    const ADMIN_USERNAME = "Professor";
-    const ADMIN_PASSWORD = "121205";
-
-    let isAdminLoggedIn = false;
-    try {
-        if (window.localStorage && localStorage.getItem('eliteAdminState') === 'true') {
-            isAdminLoggedIn = true;
-        }
-    } catch (e) {
-        console.warn("Storage restricted by browser.");
-    }
-
-    const adminToggleBtn = document.getElementById('adminToggleBtn');
-    const authModal = document.getElementById('authModal');
-    const loginExecuteBtn = document.getElementById('loginExecuteBtn');
-    const loginCancelBtn = document.getElementById('loginCancelBtn');
-    const imageModal = document.getElementById('imageModal');
-    const modalCloseBtn = document.getElementById('modalCloseBtn');
-    const fullSizeImage = document.getElementById('fullSizeImage');
-    const recordList = document.getElementById('recordList');
-    const form = document.getElementById('tournamentForm');
-    const balanceDisplay = document.getElementById('totalBalance');
-    const entryFeeInput = document.getElementById('entryFee');
-    const prizeWonInput = document.getElementById('prizeWon');
-
-    if (isAdminLoggedIn) {
-        adminToggleBtn.textContent = "Logout Admin";
-    }
-
-    // --- Hardwired Event Listeners (Bypasses HTML Blocks) ---
-
-    function openAuth() {
-        authModal.style.display = 'flex';
-    }
-
-    function closeAuth() {
-        authModal.style.display = 'none';
-        document.getElementById('usernameInput').value = '';
-        document.getElementById('passwordInput').value = '';
-    }
-
-    loginExecuteBtn.addEventListener('click', () => {
-        const u = document.getElementById('usernameInput').value;
-        const p = document.getElementById('passwordInput').value;
-        
-        if (u === ADMIN_USERNAME && p === ADMIN_PASSWORD) {
-            isAdminLoggedIn = true;
-            try { localStorage.setItem('eliteAdminState', 'true'); } catch(e){}
-            adminToggleBtn.textContent = "Logout Admin";
-            closeAuth();
-            alert("Admin Access Granted! You can now save or delete records.");
-        } else {
-            alert("Incorrect Username or Password!");
-        }
-    });
-
-    loginCancelBtn.addEventListener('click', closeAuth);
-
-    adminToggleBtn.addEventListener('click', () => {
-        if (isAdminLoggedIn) {
-            isAdminLoggedIn = false;
-            try { localStorage.removeItem('eliteAdminState'); } catch(e){}
-            adminToggleBtn.textContent = "Admin Login";
-            alert("You have safely logged out.");
-        } else {
-            openAuth();
-        }
-    });
-
-    imageModal.addEventListener('click', () => {
-        imageModal.style.display = "none";
-    });
-
-    modalCloseBtn.addEventListener('click', (e) => {
-        imageModal.style.display = "none";
-        e.stopPropagation();
-    });
-
-    function updateLiveBalance() {
-        const currentEntryFee = parseInt(entryFeeInput.value) || 0;
-        const currentPrizeWon = parseInt(prizeWonInput.value) || 0;
-        const liveBalance = savedBalance - currentEntryFee + currentPrizeWon;
-
-        balanceDisplay.textContent = `₹${liveBalance.toLocaleString('en-IN')}`;
-        balanceDisplay.className = liveBalance >= 0 ? 'positive' : 'negative';
-    }
-
-    entryFeeInput.addEventListener('input', updateLiveBalance);
-    prizeWonInput.addEventListener('input', updateLiveBalance);
-
-    // Dynamic clicks inside the table (for deleting and expanding images)
-    recordList.addEventListener('click', (e) => {
-        if (e.target.classList.contains('delete-btn')) {
-            if (!isAdminLoggedIn) {
-                openAuth();
-                return; 
-            }
-            if (confirm("Are you sure you want to remove this record? Everyone will see it removed.")) {
-                const recordId = e.target.getAttribute('data-id');
-                remove(ref(db, 'tournaments/' + recordId)); 
-            }
-        } else if (e.target.classList.contains('tournament-img')) {
-            imageModal.style.display = "flex";
-            fullSizeImage.src = e.target.getAttribute('data-src');
-        }
-    });
 
     const firebaseConfig = {
       apiKey: "AIzaSyAHoY4kVpeVuh6HWZ6ZSfgIe8QsjlYSt10",
@@ -538,11 +320,20 @@
     const db = getDatabase(app);
     const recordsRef = ref(db, 'tournaments');
 
+    const form = document.getElementById('tournamentForm');
+    const recordList = document.getElementById('recordList');
+    const balanceDisplay = document.getElementById('totalBalance');
+    const entryFeeInput = document.getElementById('entryFee');
+    const prizeWonInput = document.getElementById('prizeWon');
+    const modal = document.getElementById('imageModal');
+    const fullSizeImage = document.getElementById('fullSizeImage');
+
     let savedBalance = 0;
+    let localRecordsArray = []; 
 
     onValue(recordsRef, (snapshot) => {
         const data = snapshot.val();
-        let localRecordsArray = [];
+        localRecordsArray = [];
         savedBalance = 0;
         recordList.innerHTML = ''; 
 
@@ -559,7 +350,7 @@
 
                 let photoHtml = '<span style="color:#ccc; font-size:11px;">No Proof</span>';
                 if (record.photoBase64) {
-                    photoHtml = `<img src="${record.photoBase64}" class="tournament-img" alt="Proof" data-src="${record.photoBase64}">`;
+                    photoHtml = `<img src="${record.photoBase64}" class="tournament-img" alt="Proof" onclick="window.openModal('${record.photoBase64}')">`;
                 }
 
                 const tName = record.tournamentName || "Unnamed Tournament";
@@ -575,7 +366,7 @@
                     <td>₹${record.entryFee.toLocaleString('en-IN')}</td>
                     <td>₹${record.prizeWon.toLocaleString('en-IN')}</td>
                     <td class="${net >= 0 ? 'positive' : 'negative'}"><strong>₹${net.toLocaleString('en-IN')}</strong></td>
-                    <td><button class="delete-btn" data-id="${record.id}">Delete</button></td>
+                    <td><button class="delete-btn" onclick="window.deleteRecord('${record.id}')">Delete</button></td>
                 `;
                 recordList.appendChild(newRow);
             });
@@ -586,11 +377,110 @@
     form.addEventListener('submit', function(event) {
         event.preventDefault();
 
-        if (!isAdminLoggedIn) {
-            openAuth();
-            return; 
-        }
-
+        // Change button text so user knows it's working
         const submitBtn = form.querySelector('.submit-btn');
         submitBtn.textContent = "Saving...";
-        sub
+        submitBtn.disabled = true;
+
+        const tName = document.getElementById('tournamentName').value;
+        const date = document.getElementById('date').value;
+        const time = document.getElementById('time').value;
+        const entryFee = parseInt(entryFeeInput.value) || 0;
+        const prizeWon = parseInt(prizeWonInput.value) || 0;
+        const photoInput = document.getElementById('photo');
+
+        const saveRecord = (base64Image) => {
+            const newRecord = {
+                tournamentName: tName,
+                date: date,
+                time: time,
+                entryFee: entryFee,
+                prizeWon: prizeWon,
+                photoBase64: base64Image
+            };
+            push(recordsRef, newRecord).then(() => {
+                form.reset(); 
+                submitBtn.textContent = "Add to Records";
+                submitBtn.disabled = false;
+            }).catch(error => {
+                alert("Error saving: " + error.message);
+                submitBtn.textContent = "Add to Records";
+                submitBtn.disabled = false;
+            });
+        };
+
+        // NEW COMPRESSION ENGINE
+        if (photoInput.files && photoInput.files[0]) {
+            const file = photoInput.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    // Create a hidden canvas to resize the image
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 800; // Max size to keep it sharp but tiny
+                    const MAX_HEIGHT = 800;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height *= MAX_WIDTH / width;
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width *= MAX_HEIGHT / height;
+                            height = MAX_HEIGHT;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // Compress to highly efficient JPEG (70% quality)
+                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+                    saveRecord(compressedBase64);
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        } else {
+            saveRecord(null);
+        }
+    });
+
+    function updateLiveBalance() {
+        const currentEntryFee = parseInt(entryFeeInput.value) || 0;
+        const currentPrizeWon = parseInt(prizeWonInput.value) || 0;
+        const liveBalance = savedBalance - currentEntryFee + currentPrizeWon;
+
+        balanceDisplay.textContent = `₹${liveBalance.toLocaleString('en-IN')}`;
+        balanceDisplay.className = liveBalance >= 0 ? 'positive' : 'negative';
+    }
+
+    entryFeeInput.addEventListener('input', updateLiveBalance);
+    prizeWonInput.addEventListener('input', updateLiveBalance);
+
+    window.deleteRecord = function(recordId) {
+        if (confirm("Are you sure you want to remove this record? Everyone will see it removed.")) {
+            remove(ref(db, 'tournaments/' + recordId)); 
+        }
+    };
+
+    window.openModal = function(imageSrc) {
+        modal.style.display = "flex"; 
+        fullSizeImage.src = imageSrc; 
+        fullSizeImage.onclick = function(event) { event.stopPropagation(); }
+    };
+
+    window.closeModal = function() {
+        modal.style.display = "none";
+    };
+</script>
+
+</body>
+</html>
