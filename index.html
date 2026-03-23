@@ -94,6 +94,7 @@
             border: 1px solid #ddd;
             border-radius: 6px;
             font-size: 14px;
+            box-sizing: border-box; /* Ensures padding doesn't stretch inputs */
         }
         input:focus {
             outline: none;
@@ -119,11 +120,21 @@
             background-color: #218838;
             box-shadow: 0 0 10px rgba(40, 167, 69, 0.4); 
         }
+        
+        /* NEW: Responsive Table Wrapper */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch; /* Smooth swiping on iPhones */
+            margin-top: 20px;
+            border-radius: 8px;
+        }
+        
         table {
             width: 100%;
             border-collapse: separate;
             border-spacing: 0;
-            margin-top: 20px;
+            min-width: 600px; /* Forces table to stay wide enough to read on mobile */
         }
         th, td {
             padding: 15px;
@@ -138,6 +149,7 @@
             text-transform: uppercase;
             font-size: 12px;
             letter-spacing: 1px;
+            white-space: nowrap; /* Prevents header text from wrapping */
         }
         .tournament-img {
             width: 50px;
@@ -218,7 +230,12 @@
             display: block;
             margin-top: 2px;
         }
+        
+        /* UPDATED: Mobile Rules */
         @media (max-width: 768px) {
+            body {
+                padding: 10px; /* Less wasted space on edges */
+            }
             .app-header {
                 flex-direction: column-reverse;
                 align-items: center;
@@ -226,11 +243,14 @@
                 padding: 15px 20px;
             }
             .app-header h1 {
-                font-size: 18px;
+                font-size: 20px;
                 text-align: center;
             }
+            .content-area {
+                padding: 15px;
+            }
             .input-group {
-                flex: 1 1 calc(50% - 15px);
+                flex: 1 1 100%; /* Forces inputs to stack fully vertically */
             }
         }
     </style>
@@ -279,21 +299,23 @@
             <span id="totalBalance" class="positive">₹0</span>
         </div>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>Proof</th>
-                    <th>Tournament Name</th>
-                    <th>Date & Time</th>
-                    <th>Fee</th>
-                    <th>Prize</th>
-                    <th>Net</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody id="recordList">
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Proof</th>
+                        <th>Tournament Name</th>
+                        <th>Date & Time</th>
+                        <th>Fee</th>
+                        <th>Prize</th>
+                        <th>Net</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="recordList">
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
